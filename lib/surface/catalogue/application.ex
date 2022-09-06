@@ -7,13 +7,16 @@ defmodule Surface.Catalogue.Application do
     children =
       [
         {Phoenix.PubSub, name: Surface.Catalogue.PubSub}
-      ] ++ endpoint(Mix.env(), Mix.Project.get())
+      ] ++ endpoint()
 
     opts = [strategy: :one_for_one, name: Surface.Catalogue.Supervisor]
 
     Supervisor.start_link(children, opts)
   end
 
-  defp endpoint(:test, Surface.Catalogue.MixProject), do: [Surface.Catalogue.Server.Endpoint]
-  defp endpoint(_, _), do: []
+  if Mix.env() == :test && Mix.Project.get() == Surface.Catalogue.MixProject do
+    defp endpoint(), do: [Surface.Catalogue.Server.Endpoint]
+  else
+    defp endpoint(), do: []
+  end
 end
